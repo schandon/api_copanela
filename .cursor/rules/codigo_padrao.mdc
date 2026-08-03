@@ -1,0 +1,140 @@
+---
+description: Padrões de código, nomenclatura e boas práticas do projeto
+globs: src/**/*.{ts,tsx}
+alwaysApply: true
+---
+
+# Padrões de Código
+
+## Todo o código-fonte deve ser escrito em português
+
+Identificadores (variáveis, funções, classes) e comentários devem usar português.
+
+```ts
+// BOM
+function calcularTotalHoras(registros: Registro[]): number {
+  return registros.reduce((total, registro) => total + registro.horas, 0);
+}
+
+// RUIM
+function calculateTotalHours(records: Record[]): number {
+  return records.reduce((total, record) => total + record.hours, 0);
+}
+```
+
+## Use camelCase para declaração de funções e variáveis
+
+```ts
+// BOM
+const totalHoras = 40;
+function gerarRelatorio() {}
+
+// RUIM
+const total_horas = 40;
+function Gerar_Relatorio() {}
+```
+
+## Use PascalCase para os nomes de arquivos em toda a aplicação
+
+```text
+// BOM
+ConflictListView.tsx
+CalculadoraTimesheet.ts
+
+// RUIM
+conflict-list-view.tsx
+calculadora_timesheet.ts
+```
+
+## Declare as variáveis o mais próximo possível de onde serão utilizadas
+
+```ts
+// BOM
+function processar(itens: Item[]) {
+  for (const item of itens) {
+    const preco = item.valor * item.quantidade; // declarada logo antes do uso
+    salvar(preco);
+  }
+}
+
+// RUIM
+function processar(itens: Item[]) {
+  let preco; // declarada cedo demais, longe do uso
+  for (const item of itens) {
+    preco = item.valor * item.quantidade;
+    salvar(preco);
+  }
+}
+```
+
+## Nunca use flag params para chavear o comportamento de métodos/funções
+
+Quando uma flag booleana altera o comportamento, extraia métodos/funções dedicados.
+
+```ts
+// RUIM - flag param controla o comportamento
+function salvarRelatorio(relatorio: Relatorio, comoRascunho: boolean) {
+  if (comoRascunho) {
+    // ... salva como rascunho
+  } else {
+    // ... salva como final
+  }
+}
+
+// BOM - extrair uma função por comportamento
+function salvarRascunho(relatorio: Relatorio) {
+  // ... salva como rascunho
+}
+
+function salvarRelatorioFinal(relatorio: Relatorio) {
+  // ... salva como final
+}
+```
+
+## Nunca aninhe mais de dois if/else; prefira early returns
+
+```ts
+// RUIM - aninhamento profundo
+function validar(usuario: Usuario) {
+  if (usuario) {
+    if (usuario.ativo) {
+      if (usuario.temPermissao) {
+        return processar(usuario);
+      }
+    }
+  }
+}
+
+// BOM - early returns
+function validar(usuario: Usuario) {
+  if (!usuario) return;
+  if (!usuario.ativo) return;
+  if (!usuario.temPermissao) return;
+
+  return processar(usuario);
+}
+```
+
+## Evite métodos longos (com mais de 50 linhas)
+
+Divida um método longo em auxiliares menores e bem nomeados.
+
+```ts
+// BOM
+function gerarRelatorio(dados: Dados) {
+  const validados = validarDados(dados);
+  const calculados = calcularTotais(validados);
+  return formatarSaida(calculados);
+}
+```
+
+## Evite classes longas (com mais de 300 linhas)
+
+Separe responsabilidades em classes/módulos colaborativos quando uma classe crescer demais.
+
+## Estrutura do projeto
+
+O código do projeto está distribuído entre três pastas:
+
+- `/src` — código-fonte do projeto.
+- `/docs` — documentações produzidas.

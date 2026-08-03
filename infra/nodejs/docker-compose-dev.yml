@@ -1,0 +1,30 @@
+services:
+  node:
+    build:
+      context: ../..
+      dockerfile: infra/nodejs/Dockerfile
+    container_name: 'service_report_api'
+    restart: 'unless-stopped'
+    user: 'node'
+    working_dir: '/usr/src/app'
+    environment:
+      NODE_ENV: '${NODE_ENV}'
+      HOST_API: '${HOST_API}'
+      API_PORT: '${API_PORT}'
+      # VIRTUAL_HOST: '${HOST_API}'
+      # LETSENCRYPT_HOST: ${HOST_API}
+    volumes:
+      - app:/usr/src/app
+      - node_modules:/usr/src/app/node_modules
+    ports:
+      - '${API_PORT}:${API_PORT}'
+    command: 'node ./dist/server.js && npx prisma migrate dev'
+
+networks:
+  default:
+    name: infra_default #${NGINX_NETWORK_NAME} # A rede padrão se você especificar um nome
+    # external: true
+
+volumes:
+  app:
+  node_modules:
